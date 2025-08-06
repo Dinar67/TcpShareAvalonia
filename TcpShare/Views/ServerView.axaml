@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="800"
+             x:Class="TcpShare.Views.ServerView">
+    <Grid>
+        <Button Name="BackBtn"
+                Click="BackBtn_OnClick"
+                Width="100" Height="30"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="15 40 0 0">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                Back
+            </TextBlock>
+        </Button>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock FontSize="28" HorizontalAlignment="Center" FontWeight="Bold" Margin="0 0 0 40">Send</TextBlock>
+
+            <TextBlock Name="FileNameTb" Margin="0 0 0 5" Width="220"></TextBlock>
+            <ProgressBar Name="FileSendPb" Margin="0 0 0 15" Width="220" Height="30" Minimum="0" Maximum="1"></ProgressBar>
+            <StackPanel Name="IpPanel"
+                        IsVisible="False"
+                        Orientation="Horizontal"
+                        Margin="0 0 0 10">
+                <TextBlock Width="100" 
+                           VerticalAlignment="Center">IP address:</TextBlock>
+                <TextBlock Name="IpTb" 
+                           Width="120" 
+                           TextAlignment="Center"></TextBlock>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                <TextBlock Width="100" VerticalAlignment="Center">Server port:</TextBlock>
+                <TextBox Name="PortTb" Width="120" TextAlignment="Center">5080</TextBox>
+            </StackPanel>
+            <Button Name="StartBtn" Click="StartBtn_OnClick"
+                    Height="30" Width="220"
+                    Margin="0 0 0 10">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    Start
+                </TextBlock>
+            </Button>
+        </StackPanel>
+
+        <TextBlock x:Name="DebugText" IsVisible="False" FontSize="16" Foreground="GreenYellow"
+                   HorizontalAlignment="Right" VerticalAlignment="Top">
+            Подключен
+        </TextBlock>
+    </Grid>
+</UserControl>

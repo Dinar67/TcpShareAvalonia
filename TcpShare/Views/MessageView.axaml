@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
+             x:Class="TcpShare.Views.MessageView">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="6*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <TextBox Margin="10"
+                 Name="MessageTb"
+                 Grid.Row="0"
+                 IsReadOnly="True"
+                 TextWrapping="Wrap"
+                 BorderBrush="Transparent"
+                 Background="Transparent"
+                 TextAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Focusable="False"
+                 BorderThickness="0"></TextBox>
+        
+        <Button Name="OkBtn"
+                Click="OkBtn_OnClick"
+                Width="100"
+                Height="30"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Grid.Row="1">
+            <TextBlock HorizontalAlignment="Center" 
+                       VerticalAlignment="Center">OK</TextBlock>
+        </Button>
+    </Grid>
+</UserControl>
