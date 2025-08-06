@@ -6,9 +6,42 @@
              mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="800"
              x:Class="TcpShare.Views.MainView"
              x:DataType="vm:MainViewModel">
+    <UserControl.DataContext>
+        <vm:MainViewModel></vm:MainViewModel>
+    </UserControl.DataContext>
     <Grid>
-        <ContentControl Name="MainContentControl"></ContentControl>
-    
+        <SplitView Name="MainSplitView" 
+                   OpenPaneLength="250">
+            <SplitView.Pane>
+                <Grid>
+                    <StackPanel Margin="15"
+                                HorizontalAlignment="Stretch">
+                        <StackPanel Margin="0 15 0 10" Orientation="Horizontal">
+                            <TextBlock Width="80"
+                                       VerticalAlignment="Center">Buffer size:</TextBlock>
+                            <ComboBox Name="BufferSizeCb"
+                                     Width="140"
+                                     SelectedItem="{Binding Path=CurrentBufferSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     ItemsSource="{Binding Path=BufferSizes}"></ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid>
+                    <ContentControl Name="MainContentControl"></ContentControl>
+                    <Button Width="30" Height="30" 
+                            Name="MenuBtn"
+                            Click="MenuBtn_OnClick"
+                            Margin="10 30" 
+                            VerticalAlignment="Top">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="18">≡</TextBlock>
+                    </Button>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
         <Rectangle Name="MessageRect"
                    IsVisible="False"
                    Fill="Black"

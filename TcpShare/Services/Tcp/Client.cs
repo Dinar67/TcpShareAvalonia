@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Avalonia.Platform.Storage;
+using TcpShare.Views;
 
 namespace TcpShare.Services.Tcp;
 
@@ -60,7 +60,7 @@ public class Client : IDisposable
     public async Task ReceiveFiles()
     {
         int countFiles = await ReceiveInt(); // Читаем длину количества файлов (4 байта)
-        var buffer = new byte[4096];
+        var buffer = new byte[MainView.BufferSize];
         int i = 0;
         while (i < countFiles)
         {

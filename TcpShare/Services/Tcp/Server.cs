@@ -4,10 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
+using TcpShare.Views;
 
 namespace TcpShare.Services.Tcp;
 
@@ -53,7 +53,7 @@ public class Server : IDisposable
     {
         // Отправляем количество файлов (4 байта)
         await SendInt(files.Count);
-        var buffer = new byte[4096];
+        var buffer = new byte[MainView.BufferSize];
         foreach (var file in files)
             await SendFile(buffer, file);
     }

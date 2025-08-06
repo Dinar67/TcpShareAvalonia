@@ -2,12 +2,14 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using TcpShare.Services;
+using TcpShare.ViewModels;
 
 namespace TcpShare.Views;
 
 public partial class MainView : UserControl
 {
     public static IStorageProvider? Storage { get; private set; }
+    public static int BufferSize => (_instance.DataContext as MainViewModel)!.CurrentBufferSize;
     private static MainView _instance;
     public MainView()
     {
@@ -32,5 +34,10 @@ public partial class MainView : UserControl
 
     public static void Navigate(UserControl page) {
         _instance.MainContentControl.Content = page;
+    }
+
+    private void MenuBtn_OnClick(object? sender, RoutedEventArgs e)
+    {
+        MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
     }
 }

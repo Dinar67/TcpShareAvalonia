@@ -8,9 +8,9 @@
         <Button Name="BackBtn"
                 Click="BackBtn_OnClick"
                 Width="100" Height="30"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Right"
                 VerticalAlignment="Top"
-                Margin="15 40 0 0">
+                Margin="0 40 15 0">
             <TextBlock HorizontalAlignment="Center"
                        VerticalAlignment="Center">
                 Back
