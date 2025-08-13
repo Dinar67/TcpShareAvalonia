@@ -10,6 +10,8 @@ public partial class MainView : UserControl
 {
     public static IStorageProvider? Storage { get; private set; }
     public static int BufferSize => (_instance.DataContext as MainViewModel)!.CurrentBufferSize;
+    public static int Port => (_instance.DataContext as MainViewModel)!.Port;
+    
     private static MainView _instance;
     public MainView()
     {

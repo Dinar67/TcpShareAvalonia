@@ -24,6 +24,12 @@
                                      SelectedItem="{Binding Path=CurrentBufferSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      ItemsSource="{Binding Path=BufferSizes}"></ComboBox>
                         </StackPanel>
+                        <StackPanel Margin="0 0 0 10" Orientation="Horizontal">
+                            <TextBlock Width="80"
+                                       VerticalAlignment="Center">Port:</TextBlock>
+                            <TextBox Width="140"
+                                     Text="{Binding Port}"></TextBox>
+                        </StackPanel>
                     </StackPanel>
                 </Grid>
             </SplitView.Pane>

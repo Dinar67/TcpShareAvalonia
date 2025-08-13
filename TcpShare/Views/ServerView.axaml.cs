@@ -50,9 +50,17 @@ public partial class ServerView : UserControl
 
     private async Task Connect()
     {
-        _server = new Server();
+        _server = new Server(MainView.Port);
         _server.ProgressChanged += ProgressChanged;
         ShowIp();
+        Task.Run(async () =>
+        {
+            while (!_server.Connected)
+            {
+                await Task.Delay(50);
+                await UdpLocator.SendBroadcastMessage();
+            }
+        });
         await _server.AcceptClientAsync();
         DebugText.IsVisible = true;
     }
@@ -71,7 +79,7 @@ public partial class ServerView : UserControl
     }
     private void Validate()
     {
-        if (!int.TryParse(PortTb.Text, out int port) || port >= 65535) 
+        if (MainView.Port >= 65535) 
             throw new Exception("Server port is wrong!");
     }
 }

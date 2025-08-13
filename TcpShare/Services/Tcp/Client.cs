@@ -62,6 +62,8 @@ public class Client : IDisposable
         int countFiles = await ReceiveInt(); // Читаем длину количества файлов (4 байта)
         var buffer = new byte[MainView.BufferSize];
         int i = 0;
+        
+        
         while (i < countFiles)
         {
             try
@@ -87,6 +89,10 @@ public class Client : IDisposable
         
         var file = await Storage.SaveFile(fileName);
         if (file == null) throw new NullReferenceException();
+
+        // var file = await folder.CreateFileAsync(fileName);
+        // if (file == null) throw new NullReferenceException();
+        
         using (var fs = await file.OpenWriteAsync())
         {
             long bytesReceived = 0;

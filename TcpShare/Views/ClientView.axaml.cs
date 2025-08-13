@@ -1,5 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -13,9 +19,18 @@ public partial class ClientView : UserControl
 {
     private Client _client;
     private int _port;
+    private string _ip;
+
+    private List<UdpDevice> _devices = new List<UdpDevice>();
     public ClientView()
     {
         InitializeComponent();
+        UdpLocator.DeviceLocated += (device) =>
+        {
+            _devices.Add(device);
+            RefreshDevices();
+        };
+        RefreshDevices();
     }
     private void BackBtn_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -28,8 +43,8 @@ public partial class ClientView : UserControl
         try
         {
             ConnectBtn.IsEnabled = false;
-            Validate();
-            if (_client == null || !_client.Connected) await Connect();
+            if ( _client == null || !_client.Connected) await Connect();
+
             await _client.ReceiveFiles();
             Logger.Show("Получено!");
             ConnectBtn.IsEnabled = true;
@@ -42,9 +57,12 @@ public partial class ClientView : UserControl
         }
     }
 
+
+    
+
     private async Task Connect()
     {
-        _client = new Client(IpTb.Text!, _port);
+        _client = new Client(_ip, _port);
         _client.ProgressChanged += ProgressChanged;
         await _client.ConnectAsync();
         DebugText.IsVisible = true;
@@ -55,12 +73,24 @@ public partial class ClientView : UserControl
         FileReceivePb.Value = value;
         FileNameTb.Text = _client.CurrentFile;
     }
-
-    private void Validate()
+    
+    private async void RefreshBtn_OnClick(object? sender, RoutedEventArgs e)
     {
-        if(string.IsNullOrWhiteSpace(IpTb.Text))
-            throw new ValidationException("Fill the IP textBox!");
-        if (!int.TryParse(PortTb.Text, out _port))
-            throw new ValidationException("Server port should be numbers!");
+        _devices.Clear();
+        RefreshBtn.IsEnabled = false;
+        await UdpLocator.LocateDevices();
+        RefreshBtn.IsEnabled = true;
+    }
+
+    private void RefreshDevices()
+    {
+        DevicesLb.ItemsSource = null;
+        DevicesLb.ItemsSource = _devices;
+    }
+
+    private void DevicesLb_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _ip = (DevicesLb.SelectedItem as UdpDevice)!.IpAdrress;
+        _port = MainView.Port;
     }
 }

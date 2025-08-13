@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:services="clr-namespace:TcpShare.Services"
              mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="800"
              x:Class="TcpShare.Views.ClientView">
     <Grid>
@@ -21,14 +22,37 @@
             
             <TextBlock Name="FileNameTb" Margin="0 0 0 5" Width="220"></TextBlock>
             <ProgressBar Name="FileReceivePb" Margin="0 0 0 10" Height="30" Width="220" Minimum="0" Maximum="1"></ProgressBar>
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                <TextBlock Width="100" VerticalAlignment="Center">Server IP:</TextBlock>
-                <TextBox Name="IpTb" Width="120" TextAlignment="Center">192.168.0.0</TextBox>
+            
+            <StackPanel Margin="0 0 0 10">
+                <Grid Margin="0 0 0 3">
+                    <TextBlock Margin="10 0 0 0"
+                               VerticalAlignment="Center"
+                               FontSize="18">Devices:</TextBlock>
+                    <Button Name="RefreshBtn"
+                            Click="RefreshBtn_OnClick"
+                            Width="30" Height="30"
+                            HorizontalAlignment="Right">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">⟳</TextBlock>
+                    </Button>
+                </Grid>
+                <ListBox Name="DevicesLb" 
+                         Height="150"
+                         SelectionChanged="DevicesLb_OnSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type services:UdpDevice}">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="{Binding DeviceName}"
+                                           Margin="0 0 10 0"></TextBlock>
+                                <TextBlock Text="{Binding IpAdrress}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                <TextBlock Width="100" VerticalAlignment="Center">Server port:</TextBlock>
-                <TextBox Name="PortTb" Width="120" TextAlignment="Center">5080</TextBox>
-            </StackPanel>
+            
             <Button Name="ConnectBtn"
                     Click="ConnectBtn_OnClick"
                     Height="30" Width="220"

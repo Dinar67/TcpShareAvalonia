@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace TcpShare.ViewModels;
 
@@ -16,8 +17,21 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    private int _port;
+
+    public int Port
+    {
+        get => _port;
+        set
+        {
+            _port = value;
+            OnPropertyChanged();
+        }
+    }
+
     public MainViewModel()
     {
         CurrentBufferSize = BufferSizes[1];
+        Port = 5080;
     }
 }
