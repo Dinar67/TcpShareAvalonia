@@ -10,27 +10,30 @@ using System.Threading.Tasks;
 
 namespace TcpShare.Services;
 
-public static class UdpLocator
+public class UdpLocator
 {
-    #region CONSTANTS
-
-    public const int PORT = 11000;
-    public const float TIME_LOCATE = 5f;
-
-    #endregion
-
-
-    public static Action<UdpDevice> DeviceLocated;
-
-    public static List<UdpDevice> Devices { get; private set; } = new List<UdpDevice>();
-
-    public static async Task<List<UdpDevice>> LocateDevices() => await LocateDevices(Devices);
-    public static async Task<List<UdpDevice>> LocateDevices(List<UdpDevice> devices)
+    public Action<UdpDevice> DeviceLocated;
+    
+    private readonly float _time;
+    private readonly int _port;
+    private readonly string _name;
+    
+    public UdpLocator() : this(5, 11000, Environment.MachineName){ }
+    public UdpLocator(string machineName) : this(5, 11000, Environment.MachineName){ }
+    public UdpLocator(float timeLocate, int port) : this(timeLocate, port, Environment.MachineName){ }
+    public UdpLocator(float timeLocate, int port, string machineName)
     {
-        Devices.Clear();
-        using (UdpClient client = new UdpClient(PORT))
+        _time = timeLocate;
+        _port = port;
+        _name = machineName;
+    }
+    
+    public async Task<List<UdpDevice>> LocateDevices()
+    {
+        var devices = new List<UdpDevice>();
+        using (UdpClient client = CreateUdpClient())
         {
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(TIME_LOCATE));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(_time));
             while (!cts.Token.IsCancellationRequested)
             {
                 try
@@ -40,12 +43,10 @@ public static class UdpLocator
                     {
                         devices.Add(device);
                         DeviceLocated?.Invoke(device);
-                        Debug.WriteLine($"Найдено устройство: {device.DeviceName} ({device.IpAdrress})");
                     }
                 }
                 catch (OperationCanceledException)
-                {
-                    // Время вышло
+                {   //время вышло
                     break;
                 }
             }
@@ -53,7 +54,28 @@ public static class UdpLocator
 
         return devices;
     }
-    private static async Task<UdpDevice> LocateDevice(UdpClient client, CancellationTokenSource cts)
+
+    private UdpClient CreateUdpClient()
+    {
+        UdpClient client;
+        int attemptPort = _port;
+    
+        while (true)
+        {
+            try
+            {
+                client = new UdpClient(attemptPort);
+                return client;
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
+            {
+                attemptPort++;
+                if (attemptPort > _port + 100) // Лимит попыток
+                    throw new InvalidOperationException("No available port found");
+            }
+        }
+    }
+    private async Task<UdpDevice> LocateDevice(UdpClient client, CancellationTokenSource cts)
     {
         var result = await client.ReceiveAsync(cts.Token);
         return new UdpDevice(
@@ -62,16 +84,16 @@ public static class UdpLocator
         );
     }
 
-    public static async Task SendBroadcastMessage()
+    public async Task SendBroadcastMessage()
     {
-        using (var client = new UdpClient(PORT))
+        using (var client = new UdpClient(_port))
         {
             client.EnableBroadcast = true;
-            await SendMessage(client, new IPEndPoint(IPAddress.Broadcast, PORT), Environment.MachineName);
+            await SendMessage(client, new IPEndPoint(IPAddress.Broadcast, _port), Environment.MachineName);
         }
     }
 
-    private static async Task SendMessage(UdpClient client, IPEndPoint point, string message)
+    private async Task SendMessage(UdpClient client, IPEndPoint point, string message)
     {
         var data = Encoding.UTF8.GetBytes(message);
         await client.SendAsync(data, data.Length, point);

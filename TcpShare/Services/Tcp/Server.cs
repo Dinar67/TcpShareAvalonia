@@ -11,43 +11,23 @@ using TcpShare.Views;
 
 namespace TcpShare.Services.Tcp;
 
-public class Server : IDisposable
+public class Server : Tcp
 {
-    #region EVENTS
-    public Action<float> ProgressChanged;
-    #endregion
-
-
     public string Ip => GetLocalIp();
+    
+    public bool Connected => _listener == null || _stream == null? false : _stream.CanWrite;
 
-    private float _progress;
-    public float Progress
-    {
-        get => _progress;
-        private set
-        {
-            _progress = Math.Clamp(value, 0, 1);
-            ProgressChanged?.Invoke(_progress);
-        } 
-    }
-    public string CurrentFile { get; private set; }
-    public bool Connected => _tcpListener == null || _stream == null? false : _stream.CanWrite;
-
-    private TcpListener _tcpListener;
-    private NetworkStream _stream;
-    private bool _disposed = false;
-
+    private TcpListener _listener;
+    
+    public Server() : this(5080) { }
     public Server(int port)
     {
-        _tcpListener = new TcpListener(IPAddress.Any, port);
-        _tcpListener.Start();
-    }
-    public Server() : this(5080)
-    {
+        _listener = new TcpListener(IPAddress.Any, port);
+        _listener.Start();
     }
 
     public async Task AcceptClientAsync()
-        => _stream = (await _tcpListener.AcceptTcpClientAsync()).GetStream();
+        => _stream = (await _listener.AcceptTcpClientAsync()).GetStream();
 
     public async Task SendFiles(List<IStorageFile> files)
     {
@@ -102,14 +82,9 @@ public class Server : IDisposable
         return string.Empty;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
-        if (!_disposed)
-        {
-            ProgressChanged = null;
-            _stream?.Dispose();
-            _tcpListener?.Dispose();
-            _disposed = true;
-        }
+        base.Dispose();
+        _listener.Dispose();
     }
 }

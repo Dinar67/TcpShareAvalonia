@@ -9,36 +9,19 @@ using TcpShare.Views;
 
 namespace TcpShare.Services.Tcp;
 
-public class Client : IDisposable
+public class Client : Tcp
 {
-    #region EVENTS
-    public Action<float> ProgressChanged;
-    #endregion
-    
-    
     private Regex _ipRegex =
         new Regex(@"^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$");
+    
+    
+    public bool Connected => _client == null ? false : _client.Client.Connected;
 
     private TcpClient _client;
-    private NetworkStream _stream;
-    private bool _disposed = false;
-    
-    private float _progress;
-    public float Progress
-    {
-        get => _progress;
-        private set
-        {
-            _progress = Math.Clamp(value, 0, 1);
-            ProgressChanged?.Invoke(_progress);
-        } 
-    }
-    public string CurrentFile { get; private set; }
-    public bool Connected => _client == null ? false : _client.Connected;
-
     private string _ip;
     private int _port;
 
+    public Client(string ipServer) : this(ipServer, 5080) { }
     public Client(string ipServer, int portServer)
     {
         Validate(ipServer, portServer);
@@ -46,11 +29,7 @@ public class Client : IDisposable
         _ip = ipServer;
         _port = portServer;
     }
-
-    public Client(string ipServer) : this(ipServer, 5080)
-    {
-    }
-
+    
     public async Task ConnectAsync()
     {
         await _client.ConnectAsync(_ip, _port);
@@ -89,9 +68,6 @@ public class Client : IDisposable
         
         var file = await Storage.SaveFile(fileName);
         if (file == null) throw new NullReferenceException();
-
-        // var file = await folder.CreateFileAsync(fileName);
-        // if (file == null) throw new NullReferenceException();
         
         using (var fs = await file.OpenWriteAsync())
         {
@@ -101,8 +77,7 @@ public class Client : IDisposable
                 int bytesToRead = (int)Math.Min(buffer.Length, fileLength - bytesReceived);
                 int bytesRead = await _stream.ReadAsync(buffer, 0, bytesToRead);
 
-                if (bytesRead == 0)
-                    throw new IOException("Connection closed unexpectedly");
+                if (bytesRead == 0) throw new IOException("Соединение разорвано!");
 
                 await fs.WriteAsync(buffer, 0, bytesRead);
                 bytesReceived += bytesRead;
@@ -140,14 +115,9 @@ public class Client : IDisposable
             throw new ValidationException("Server port has limit 65535!");
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
-        if (!_disposed)
-        {
-            ProgressChanged = null;
-            _stream?.Dispose();
-            _client?.Dispose();
-            _disposed = true;
-        }
+        base.Dispose();
+        _client.Dispose();
     }
 }

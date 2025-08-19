@@ -4,10 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:services="clr-namespace:TcpShare.Services"
              mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="800"
+             xmlns:viewModel="clr-namespace:TcpShare.ViewModels"
+             x:DataType="viewModel:ClientViewModel"
              x:Class="TcpShare.Views.ClientView">
+    <UserControl.DataContext>
+        <viewModel:ClientViewModel></viewModel:ClientViewModel>
+    </UserControl.DataContext>
     <Grid>
         <Button Name="BackBtn" 
-                Click="BackBtn_OnClick" 
+                Command="{Binding Back}" 
                 Width="100" Height="30" 
                 HorizontalAlignment="Right" 
                 VerticalAlignment="Top" 
@@ -18,10 +23,19 @@
         </Button>
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock FontSize="28" HorizontalAlignment="Center" FontWeight="Bold" Margin="0 0 0 40">Receive</TextBlock>
+            <TextBlock FontSize="28"
+                       HorizontalAlignment="Center"
+                       FontWeight="Bold"
+                       Margin="0 0 0 40">Receive</TextBlock>
             
-            <TextBlock Name="FileNameTb" Margin="0 0 0 5" Width="220"></TextBlock>
-            <ProgressBar Name="FileReceivePb" Margin="0 0 0 10" Height="30" Width="220" Minimum="0" Maximum="1"></ProgressBar>
+            <TextBlock Name="FileNameTb"
+                       Text="{Binding CurrentFile, UpdateSourceTrigger=PropertyChanged}"
+                       Margin="0 0 0 5" Width="220"></TextBlock>
+            <ProgressBar Name="FileReceivePb"
+                         Value="{Binding Progress, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="0 0 0 10" 
+                         Height="30" Width="220"
+                         Minimum="0" Maximum="1"></ProgressBar>
             
             <StackPanel Margin="0 0 0 10">
                 <Grid Margin="0 0 0 3">
@@ -29,7 +43,7 @@
                                VerticalAlignment="Center"
                                FontSize="18">Devices:</TextBlock>
                     <Button Name="RefreshBtn"
-                            Click="RefreshBtn_OnClick"
+                            Command="{Binding RefreshCommand}"
                             Width="30" Height="30"
                             HorizontalAlignment="Right">
                         <TextBlock HorizontalAlignment="Center"
@@ -38,7 +52,8 @@
                 </Grid>
                 <ListBox Name="DevicesLb" 
                          Height="150"
-                         SelectionChanged="DevicesLb_OnSelectionChanged">
+                         ItemsSource="{Binding Devices, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type services:UdpDevice}">
                             <StackPanel Orientation="Horizontal"
@@ -54,7 +69,7 @@
             </StackPanel>
             
             <Button Name="ConnectBtn"
-                    Click="ConnectBtn_OnClick"
+                    Command="{Binding ConnectClick}"
                     Height="30" Width="220"
                     Margin="0 0 0 10">
                 <TextBlock HorizontalAlignment="Center"
@@ -62,7 +77,5 @@
                 </TextBlock>
             </Button>
         </StackPanel>
-
-        <TextBlock Name="DebugText" IsVisible="False" FontSize="16" Foreground="GreenYellow" HorizontalAlignment="Right" VerticalAlignment="Top">Server connected...</TextBlock>
     </Grid>
 </UserControl>

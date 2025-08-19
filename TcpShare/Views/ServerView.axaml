@@ -2,11 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModel="clr-namespace:TcpShare.ViewModels"
              mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="800"
+             x:DataType="viewModel:ServerViewModel"
              x:Class="TcpShare.Views.ServerView">
+    <UserControl.DataContext>
+        <viewModel:ServerViewModel></viewModel:ServerViewModel>
+    </UserControl.DataContext>
     <Grid>
         <Button Name="BackBtn"
-                Click="BackBtn_OnClick"
+                Command="{Binding BackCommand}"
                 Width="100" Height="30"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
@@ -18,21 +23,33 @@
         </Button>
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock FontSize="28" HorizontalAlignment="Center" FontWeight="Bold" Margin="0 0 0 40">Send</TextBlock>
+            <TextBlock FontSize="28" 
+                       HorizontalAlignment="Center"
+                       FontWeight="Bold"
+                       Margin="0 0 0 40">Send</TextBlock>
 
-            <TextBlock Name="FileNameTb" Margin="0 0 0 5" Width="220"></TextBlock>
-            <ProgressBar Name="FileSendPb" Margin="0 0 0 15" Width="220" Height="30" Minimum="0" Maximum="1"></ProgressBar>
+            <TextBlock Name="FileNameTb"
+                       Margin="0 0 0 5"
+                       Width="220"
+                       Text="{Binding CurrentFile, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+            <ProgressBar Name="FileSendPb"
+                         Value="{Binding Progress, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0 0 0 15"
+                         Width="220" Height="30"
+                         Minimum="0" Maximum="1"></ProgressBar>
+            
             <StackPanel Name="IpPanel"
-                        IsVisible="False"
                         Orientation="Horizontal"
                         Margin="0 0 0 10">
                 <TextBlock Width="100" 
                            VerticalAlignment="Center">IP address:</TextBlock>
                 <TextBlock Name="IpTb" 
                            Width="120" 
+                           Text="{Binding IP, UpdateSourceTrigger=PropertyChanged}"
                            TextAlignment="Center"></TextBlock>
             </StackPanel>
-            <Button Name="StartBtn" Click="StartBtn_OnClick"
+            <Button Name="StartBtn"
+                    Command="{Binding ConnectClick}"
                     Height="30" Width="220"
                     Margin="0 0 0 10">
                 <TextBlock HorizontalAlignment="Center"
@@ -41,10 +58,5 @@
                 </TextBlock>
             </Button>
         </StackPanel>
-
-        <TextBlock x:Name="DebugText" IsVisible="False" FontSize="16" Foreground="GreenYellow"
-                   HorizontalAlignment="Right" VerticalAlignment="Top">
-            Подключен
-        </TextBlock>
     </Grid>
 </UserControl>
